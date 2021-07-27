@@ -1,0 +1,72 @@
+<div class="modal fade" id="newSpace" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: #0d6efd" id="staticBackdropLabel">Join a new class</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" action="/joinClass" method="POST">
+          <div class="col-12">
+            <label for="joinClass1" class="form-label">Enter Unique Id of Class </label>
+            <input type="text" class="form-control" id="joinClass1" name="uniqueId">
+          </div>
+          <div class="col-12">
+            <label for="joinClass2" class="form-label">Password</label>
+            <input type="password" class="form-control" id="joinClass2" name="joinPassword">
+          </div>
+          <div class="form-check mx-2">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2">
+            <label class="form-check-label" for="flexCheckDefault2">
+              Show Password
+            </label>
+          </div>
+          <div class="p-2">
+            <p style="text-align:center">Want to create a new class? <a data-bs-toggle="modal" data-bs-dismiss="modal"
+                href="#createSpace">Click Here</a></p>
+          </div>
+          <div class="modal-footer d-flex justify-content-center mx-auto w-100">
+            <button type="submit" class="btn btn-primary w-50">Join Class</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="createSpace" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: #0d6efd" id="staticBackdropLabel">Create new Class</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" action="/createClass" method="POST">
+          <div class="col-12">
+            <label for="createClass1" class="form-label">Name of Class</label>
+            <input type="text" class="form-control" id="createClass1" name="name">
+          </div>
+          <div class="col-12">
+            <label for="createClass2" class="form-label">Create Password</label>
+            <input type="password" class="form-control" id="createClass2" name="password">
+          </div>
+          <div class="col-12">
+            <label for="createClass3" class="form-label">Small Description (optional)</label>
+            <textarea class="form-control" id="createClass3" rows="2" name="description"></textarea>
+          </div>
+
+          <div class="p-2">
+            <p style="text-align:center">Want to join an existing class <a data-bs-toggle="modal"
+                data-bs-dismiss="modal" href="#newSpace">Click Here</a></p>
+          </div>
+          <div class="modal-footer d-flex justify-content-center mx-auto w-100">
+            <button type="submit" class="btn btn-primary w-50">Create Class</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

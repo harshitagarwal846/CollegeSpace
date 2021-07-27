@@ -1,0 +1,60 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand p-2" href="/">CollegeSpace</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#about">About</a>
+        </li>
+
+
+        {{#if loggedIn}}
+        <li class="nav-item">
+          <a class="nav-link" href="/main">My Spaces</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"  data-bs-toggle="modal" data-bs-dismiss="modal"  href="#newSpace">Join/Create Space</a>
+        </li>
+
+        {{else}}
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">My Spaces</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Join/Create Space</a>
+        </li>
+        {{/if}}
+
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="#contact">Contact</a>
+        </li>
+      </ul>
+
+      {{#if loggedIn}}
+      <div class="d-grid gap-2 d-lg-block">
+        <button type="button" class="btn btn-danger mx-3 rounded data-bs-toggle=" tooltip" data-bs-placement="bottom"
+          title="Click here to logout""><a class=" text-decoration-none text-reset" href="/logout">Logout</a></button>
+        <!-- <button type=" button" class="btn btn-primary mx-2 rounded">Register</button> -->
+      </div>
+      {{else}}
+      <div class="d-grid gap-2 d-lg-block">
+        <button type="button" class="btn btn-primary mx-3 rounded data-bs-toggle=" tooltip" data-bs-placement="bottom"
+          title="Click here to login/register" data-bs-toggle="modal" data-bs-target="#signIn"">Login/Register</button>
+        <!-- <button type=" button" class="btn btn-primary mx-2 rounded">Register</button> -->
+      </div>
+      {{/if}}
+
+
+    </div>
+  </div>
+</nav>
+
+
+
