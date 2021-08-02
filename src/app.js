@@ -214,11 +214,121 @@ app.post("/joinClass", auth, async (req, res) => {
     }
 });
 
-app.get("/main/:id", auth, (req, res) => {
-    res.render("content", {
-        loggedIn: true,
-        uid: req.params.id
-    });
+app.get("/main/:id", auth, async (req, res) => {
+    try {
+        const id = req.params.id;
+        // console.log(id);
+        const space = await Space.findOne({ _id: id });
+        let spaceArr = [];
+        let n = space.announcements.length;
+        space.announcements.forEach((item) => {
+            let obj = {
+                number: n--,
+                ann: item.announcement
+            }
+            spaceArr.unshift(obj);
+        });
+        res.render("content", {
+            loggedIn: true,
+            uid: req.params.id,
+            announce: spaceArr
+        });
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+});
+
+app.post("/announce/:id", auth, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        // console.log(space);
+        space.announcements = space.announcements.concat({ announcement: req.body.announcement });
+        await space.save();
+        let n = space.announcements.length;
+        if (n > 10) {
+            while (n > 10) {
+                space.announcements.shift();
+                n--;
+            }
+        }
+        await space.save();
+        let spaceArr = [];
+        space.announcements.forEach((item) => {
+            let obj = {
+                number: n--,
+                ann: item.announcement
+            }
+            spaceArr.unshift(obj);
+        });
+        res.render("content", {
+            loggedIn: true,
+            uid: req.params.id,
+            announce: spaceArr
+        });
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error);
+    }
+});
+
+app.post("/remove/:id", auth, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        // console.log(space);
+        let n = space.announcements.length;
+        let input = req.body.announcement;
+        // console.log(input)
+        if(input>=1 && input<=n){
+            let cnt=0;
+            space.announcements = space.announcements.filter((item)=>{
+                // cnt++;
+                if((cnt++)!==(n-input)){
+                    // console.log(item.announcement);
+                    // console.log(cnt);
+                    return item.announcement;
+                }
+            });
+            await space.save();
+            let spaceArr = [];
+            let newLength = space.announcements.length;
+            space.announcements.forEach((item) => {
+                let obj = {
+                    number: newLength--,
+                    ann: item.announcement
+                }
+                spaceArr.unshift(obj);
+            });
+            res.render("content", {
+                loggedIn: true,
+                uid: req.params.id,
+                announce: spaceArr,
+                removeAnnounce:true
+            });
+        }
+        else{
+            let spaceArr = [];
+            space.announcements.forEach((item) => {
+                let obj = {
+                    number: n--,
+                    ann: item.announcement
+                }
+                spaceArr.unshift(obj);
+            });
+            res.render("content", {
+                loggedIn: true,
+                uid: req.params.id,
+                announce: spaceArr,
+                invalid:true
+            });
+        }
+        // let n = space.announcements.length;
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error);
+    }
 });
 
 app.listen(port, () => {

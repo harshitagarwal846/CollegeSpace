@@ -12,7 +12,12 @@ const spaceSchema=mongoose.Schema({
     description:{
         type:"string",
         default:""
-    }
+    },
+    announcements: [{
+        announcement: {
+            type: String
+        }
+    }]
 })
 
 const Space = new mongoose.model("Space",spaceSchema);
