@@ -19,6 +19,18 @@
     </div>
     {{/if}}
 
+    {{#if createAnnounce}}
+    <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+            <use xlink:href="#check-circle-fill" />
+        </svg>
+        <div>
+            Announcement created successfully.
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
     {{#if removeAnnounce}}
     <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
@@ -26,6 +38,18 @@
         </svg>
         <div>
             Announcement removed successfully.
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    {{#if fileAdded}}
+    <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+            <use xlink:href="#check-circle-fill" />
+        </svg>
+        <div>
+            File Added Successfully.
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -48,7 +72,83 @@
             </div>
         </div>
 
-        <div class="p-2 bd-highlight border border-primary my-3 mx-1" style="min-width:75%;min-height:30rem">Notes</div>
+        <div class="overflow-auto border border-primary my-3" style="min-width:75%;height:30rem">
+            <div class="d-flex justify-content-between align-items-center p-2 border border-dark"
+                style="background-color: rgba(0, 0, 0, 0.264);">
+                <div class="fs-4">Notes</div>
+                <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2" data-bs-toggle="modal"
+                    data-bs-target="#addFile"><i class="bi bi-pencil-fill"></i> Edit</button>
+            </div>
+            {{#if pdfArr}}
+            <div class="container">
+                <p class="text-center fs-1 my-2">PDFs</p>
+                <hr class="mt-0">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                    {{#each pdfArr}}
+                   <div class="col border my-2 p-2 d-flex flex-column justify-content-between" style="min-height: 10rem">
+                        <p class="fs-5 fw-bold">{{this.displayName}}</p>
+                        {{!-- <br> --}}
+                        <p>Size: {{this.size}}</p>
+                        {{!-- <br> --}}
+                        <div class="text-center mb-1"><a class="btn btn-primary w-50" href="{{this.path}}" role="button" target="_blank">Open File</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            {{#if imgArr}}
+            <div class="container">
+                <p class="text-center fs-1 my-2">Images</p>
+                <hr class="mt-0">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                    {{#each imgArr}}
+                   <div class="col border my-2 p-2 d-flex flex-column justify-content-between" style="min-height: 10rem">
+                        <p class="fs-5 fw-bold">{{this.displayName}}</p>
+                        {{!-- <br> --}}
+                        <p>Size: {{this.size}}</p>
+                        {{!-- <br> --}}
+                        <div class="text-center mb-1"><a class="btn btn-primary w-50" href="{{this.path}}" role="button" target="_blank">Open File</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            {{#if vidArr}}
+            <div class="container">
+                <p class="text-center fs-1 my-2">Videos</p>
+                <hr class="mt-0">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                    {{#each vidArr}}
+                   <div class="col border my-2 p-2 d-flex flex-column justify-content-between" style="min-height: 10rem">
+                        <p class="fs-5 fw-bold">{{this.displayName}}</p>
+                        {{!-- <br> --}}
+                        <p>Size: {{this.size}}</p>
+                        {{!-- <br> --}}
+                        <div class="text-center mb-1"><a class="btn btn-primary w-50" href="{{this.path}}" role="button" target="_blank">Open File</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            {{#if otherArr}}
+            <div class="container">
+                <p class="text-center fs-1 my-2">Others</p>
+                <hr class="mt-0">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                    {{#each otherArr}}
+                   <div class="col border my-2 p-2 d-flex flex-column justify-content-between" style="min-height: 10rem">
+                        <p class="fs-5 fw-bold">{{this.displayName}}</p>
+                        {{!-- <br> --}}
+                        <p>Size: {{this.size}}</p>
+                        {{!-- <br> --}}
+                        <div class="text-center mb-1"><a class="btn btn-primary w-50" href="{{this.path}}" role="button" target="_blank">Open File</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            {{!-- <a href="\uploads\1628066277612-948114456.mp4" target="_blank">Test</a> --}}
+        </div>
     </div>
 
     <div class="modal fade" id="announcements" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -65,7 +165,7 @@
                             <textarea class="form-control" id="addAnnounce" rows="2" name="announcement"></textarea>
                         </div>
                         <p class="text-center">To remove an announcement <a data-bs-toggle="modal"
-                                    data-bs-dismiss="modal" href="#remove">Click Here</a></p>
+                                data-bs-dismiss="modal" href="#remove">Click Here</a></p>
                         <div class="modal-footer d-flex justify-content-center mx-auto w-100">
                             <button type="submit" class="btn btn-primary w-50">Add</button>
                         </div>
@@ -82,19 +182,51 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="removeannouncementModalLabel">Remove Announcement</h5>
+                    <h5 class="modal-title" id="addFile1mentModalLabel">Remove Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form class="row g-3" action="/remove/{{uid}}" method="POST">
                         <div class="col-12">
-                            <label for="removeAnnounce" class="form-label">Announcement No. :</label>
-                            <input type="number" class="form-control" id="removeAnnounce" rows="2" name="announcement" placeholder="For Ex. 2 -> Deletes the 2nd announcement"></input>
+                            <label for="addFile1" class="form-label">Announcement No. :</label>
+                            <input type="number" class="form-control" id="addFile1" rows="2" name="announcement"
+                                placeholder="For Ex. 2 -> Deletes the 2nd announcement"></input>
                         </div>
-                        <p class="text-center">To add an announcement <a data-bs-toggle="modal"
-                                    data-bs-dismiss="modal" href="#announcements">Click Here</a></p>
+                        <p class="text-center">To add an announcement <a data-bs-toggle="modal" data-bs-dismiss="modal"
+                                href="#announcements">Click Here</a></p>
                         <div class="modal-footer d-flex justify-content-center mx-auto w-100">
                             <button type="submit" class="btn btn-primary w-50">Remove</button>
+                        </div>
+                    </form>
+                </div>
+                {{!-- <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div> --}}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addFile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addFile1mentModalLabel">Add File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3" action="/file/{{uid}}" method="POST" enctype="multipart/form-data">
+                        <div class="col-12">
+                            <label for="addFile1" class="form-label">Enter file name to be displayed</label>
+                            <input type="text" class="form-control" id="addFile1" rows="2" name="displayName"></input>
+                        </div>
+                        <div class="col-12">
+                            {{!-- <label for="addFile2" class="form-label">Enter file name to be displayed</label> --}}
+                            <input type="file" class="form-control" id="addFile2" rows="2" name="file"></input>
+                        </div>
+                        {{!-- <p class="text-center">To add an announcement <a data-bs-toggle="modal"
+                                data-bs-dismiss="modal" href="#announcements">Click Here</a></p> --}}
+                        <div class="modal-footer d-flex justify-content-center mx-auto w-100">
+                            <button type="submit" class="btn btn-primary w-50">Add</button>
                         </div>
                     </form>
                 </div>

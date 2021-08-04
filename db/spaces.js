@@ -17,6 +17,28 @@ const spaceSchema=mongoose.Schema({
         announcement: {
             type: String
         }
+    }],
+    files: [{
+        displayName: {
+            type: String,
+            required: true
+        },
+        fileName: {
+            type: String,
+            required: true
+        },
+        path: {
+            type: String,
+            required: true
+        },
+        size: {
+            type: String,
+            required: true
+        },
+        fileType: {
+            type: String,
+            required: true
+        }
     }]
 })
 

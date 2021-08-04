@@ -3,8 +3,9 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const hbs = require('hbs');
+const multer = require('multer');
 const cookieParser = require('cookie-parser');
-const { auth } = require("../src/auth.js");
+const { auth, info } = require("./middleware.js");
 
 require("../db/conn.js"); //connecting to mongodb
 
@@ -25,6 +26,21 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(staticPath));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+let storage = multer.diskStorage({
+    destination: ((req, file, cb) => {
+        cb(null, "public/uploads/")
+    }),
+    filename: ((req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    })
+})
+
+let upload = multer({
+    storage: storage,
+    limit: { fileSize: 1000000 * 100 } //100 MB
+}).single("file");
 
 var loggedOut = true, loggedIn = false;
 var contactsubmit = false;
@@ -51,7 +67,7 @@ app.get('/main', auth, (req, res) => {
             console.log(error);
         }
     });
-    console.log(spaceArr);
+    // console.log(spaceArr);
     res.render("main", {
         loggedIn: true,
         classes: spaceArr
@@ -214,24 +230,16 @@ app.post("/joinClass", auth, async (req, res) => {
     }
 });
 
-app.get("/main/:id", auth, async (req, res) => {
+app.get("/main/:id", [auth, info], async (req, res) => {
     try {
-        const id = req.params.id;
-        // console.log(id);
-        const space = await Space.findOne({ _id: id });
-        let spaceArr = [];
-        let n = space.announcements.length;
-        space.announcements.forEach((item) => {
-            let obj = {
-                number: n--,
-                ann: item.announcement
-            }
-            spaceArr.unshift(obj);
-        });
         res.render("content", {
             loggedIn: true,
             uid: req.params.id,
-            announce: spaceArr
+            announce: req.spaceArr,
+            pdfArr: req.pdfArr,
+            imgArr: req.imgArr,
+            vidArr: req.vidArr,
+            otherArr: req.otherArr,
         });
     }
     catch (error) {
@@ -239,7 +247,7 @@ app.get("/main/:id", auth, async (req, res) => {
     }
 });
 
-app.post("/announce/:id", auth, async (req, res) => {
+app.post("/announce/:id", [auth, info], async (req, res) => {
     try {
         const id = req.params.id;
         const space = await Space.findOne({ _id: id });
@@ -254,18 +262,15 @@ app.post("/announce/:id", auth, async (req, res) => {
             }
         }
         await space.save();
-        let spaceArr = [];
-        space.announcements.forEach((item) => {
-            let obj = {
-                number: n--,
-                ann: item.announcement
-            }
-            spaceArr.unshift(obj);
-        });
         res.render("content", {
             loggedIn: true,
             uid: req.params.id,
-            announce: spaceArr
+            announce: req.spaceArr,
+            pdfArr: req.pdfArr,
+            imgArr: req.imgArr,
+            vidArr: req.vidArr,
+            otherArr: req.otherArr,
+            createAnnounce: true
         });
     } catch (error) {
         res.status(500).send(error);
@@ -273,7 +278,7 @@ app.post("/announce/:id", auth, async (req, res) => {
     }
 });
 
-app.post("/remove/:id", auth, async (req, res) => {
+app.post("/remove/:id", [auth, info], async (req, res) => {
     try {
         const id = req.params.id;
         const space = await Space.findOne({ _id: id });
@@ -281,47 +286,38 @@ app.post("/remove/:id", auth, async (req, res) => {
         let n = space.announcements.length;
         let input = req.body.announcement;
         // console.log(input)
-        if(input>=1 && input<=n){
-            let cnt=0;
-            space.announcements = space.announcements.filter((item)=>{
+        if (input >= 1 && input <= n) {
+            let cnt = 0;
+            space.announcements = space.announcements.filter((item) => {
                 // cnt++;
-                if((cnt++)!==(n-input)){
+                if ((cnt++) !== (n - input)) {
                     // console.log(item.announcement);
                     // console.log(cnt);
                     return item.announcement;
                 }
             });
             await space.save();
-            let spaceArr = [];
-            let newLength = space.announcements.length;
-            space.announcements.forEach((item) => {
-                let obj = {
-                    number: newLength--,
-                    ann: item.announcement
-                }
-                spaceArr.unshift(obj);
-            });
             res.render("content", {
                 loggedIn: true,
                 uid: req.params.id,
-                announce: spaceArr,
-                removeAnnounce:true
+                announce: req.spaceArr,
+                pdfArr: req.pdfArr,
+                imgArr: req.imgArr,
+                vidArr: req.vidArr,
+                otherArr: req.otherArr,
+                removeAnnounce: true
             });
         }
-        else{
-            let spaceArr = [];
-            space.announcements.forEach((item) => {
-                let obj = {
-                    number: n--,
-                    ann: item.announcement
-                }
-                spaceArr.unshift(obj);
-            });
+        else {
             res.render("content", {
                 loggedIn: true,
                 uid: req.params.id,
-                announce: spaceArr,
-                invalid:true
+                announce: req.spaceArr,
+                pdfArr: req.pdfArr,
+                imgArr: req.imgArr,
+                vidArr: req.vidArr,
+                otherArr: req.otherArr,
+                invalid: true
             });
         }
         // let n = space.announcements.length;
@@ -330,6 +326,52 @@ app.post("/remove/:id", auth, async (req, res) => {
         console.log(error);
     }
 });
+
+app.post('/file/:id', [auth, info], (req, res) => {
+    upload(req, res, async (err) => {
+        try {
+            if (err) {
+                res.status(500).send(err);
+                console.log(err);
+            }
+            else {
+                const id = req.params.id;
+                const space = await Space.findOne({ _id: id });
+                const filetype = path.extname(req.file.filename).slice(1);
+                let size = Math.round(req.file.size / 1024);
+                if (size >= 1024) {
+                    size = Math.round(size / 1024) + " MB";
+                }
+                else
+                    size += " KB"
+                space.files = space.files.concat({
+                    fileName: req.file.filename,
+                    path: req.file.path.slice(6),
+                    size,
+                    fileType: filetype.toLowerCase(),
+                    displayName: req.body.displayName,
+                });
+                await space.save();
+                console.log("File Added Successfully");
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    fileAdded: true
+                });
+            }
+        }
+        catch (err) {
+            res.status(500).send(err);
+            console.log(err);
+        }
+    });
+});
+
 
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
