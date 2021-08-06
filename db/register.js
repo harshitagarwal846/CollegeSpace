@@ -36,6 +36,9 @@ const regSchema = mongoose.Schema({
     spaces: [{
         space: {
             type: String
+        },
+        admin: {
+            type: Boolean
         }
     }],
     isLoggedIn:{

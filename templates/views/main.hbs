@@ -7,17 +7,18 @@
     {{>navbar}}
     {{>symbols}}
 
-    {{#if classcreate}}
+    {{#if success}}
     <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
             <use xlink:href="#check-circle-fill" />
         </svg>
         <div>
-            Class created successfully.
+            {{msg}}
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {{/if}}
+    
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 mx-1">
         {{#each classes}}

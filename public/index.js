@@ -18,3 +18,7 @@ checkbox2.addEventListener("click", () => {
         password2.type = "password";
 });
 
+function remove(){
+    alert("hi");
+}
+

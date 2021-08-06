@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require('express');
 const app = express();
 const path = require('path');
+const fs = require('fs');
 const hbs = require('hbs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
@@ -55,23 +56,28 @@ app.get('/', auth, (req, res) => {
     });
 })
 
-app.get('/main', auth, (req, res) => {
-    let spaceArr = [];
-    req.currentUser.spaces.forEach(async (item) => {
-        try {
-            const temp = await Space.findOne({ _id: item.space });
-            // console.log(temp);
-            spaceArr.push(temp);
-            // console.log(spaceArr);
-        } catch (error) {
-            console.log(error);
-        }
-    });
-    // console.log(spaceArr);
-    res.render("main", {
-        loggedIn: true,
-        classes: spaceArr
-    });
+app.get('/main', auth, async (req, res) => {
+    try {
+        let spaceArr = [];
+        await req.currentUser.spaces.forEach(async (item) => {
+            try {
+                const temp = await Space.findOne({ _id: item.space });
+                // console.log(temp);
+                await spaceArr.push(temp);
+                // console.log(spaceArr);
+            } catch (error) {
+                console.log(error);
+            }
+        });
+        // console.log(spaceArr);
+        res.render("main", {
+            loggedIn: true,
+            classes: spaceArr
+        });
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error);
+    }
     // res.render("main");
 })
 
@@ -158,7 +164,6 @@ app.post("/contact", auth, async (req, res) => { //submitting contact form
         // console.log(req.body);
         const contactData = new Contact(req.body);
         await contactData.save();
-        contactsubmit = true;
         res.render("index", {
             contactsubmit: true,
             loggedIn: req.currentUser.isLoggedIn
@@ -172,15 +177,23 @@ app.post("/createClass", auth, async (req, res) => {
     try {
         const spaceData = new Space(req.body);
         const currentSpace = await spaceData.save();
+        currentSpace.users = currentSpace.users.concat({
+            email: req.currentUser.email,
+            admin: true
+        });
+        await currentSpace.save();
         console.log(currentSpace._id);
-        req.currentUser.spaces = req.currentUser.spaces.concat({ space: currentSpace._id });
+        req.currentUser.spaces = req.currentUser.spaces.concat({
+            space: currentSpace._id,
+            admin: true
+        });
         await req.currentUser.save();
         let spaceArr = [];
         req.currentUser.spaces.forEach(async (item) => {
             try {
                 const temp = await Space.findOne({ _id: item.space });
                 // console.log(temp);
-                spaceArr.push(temp);
+                await spaceArr.push(temp);
                 // console.log(spaceArr);
             } catch (error) {
                 console.log(error);
@@ -188,8 +201,9 @@ app.post("/createClass", auth, async (req, res) => {
         });
         res.render("main", {
             loggedIn: true,
-            classcreate: true,
-            classes: spaceArr
+            classes: spaceArr,
+            success: true,
+            msg: "Class created successfully."
         });
     } catch (error) {
         res.status(500).send(error);
@@ -203,14 +217,22 @@ app.post("/joinClass", auth, async (req, res) => {
         const password = req.body.joinPassword;
         const user = await Space.findOne({ _id: uid });
         if (user.password === password) {
-            req.currentUser.spaces = req.currentUser.spaces.concat({ space: uid });
+            req.currentUser.spaces = req.currentUser.spaces.concat({
+                space: uid,
+                admin: false
+            });
             await req.currentUser.save();
+            user.users = user.users.concat({
+                email: req.currentUser.email,
+                admin: false
+            });
+            await user.save();
             let spaceArr = [];
             req.currentUser.spaces.forEach(async (item) => {
                 try {
                     const temp = await Space.findOne({ _id: item.space });
                     // console.log(temp);
-                    spaceArr.push(temp);
+                    await spaceArr.push(temp);
                     // console.log(spaceArr);
                 } catch (error) {
                     console.log(error);
@@ -240,6 +262,8 @@ app.get("/main/:id", [auth, info], async (req, res) => {
             imgArr: req.imgArr,
             vidArr: req.vidArr,
             otherArr: req.otherArr,
+            admin: req.admin,
+            classInfo: req.classInfo,
         });
     }
     catch (error) {
@@ -262,15 +286,27 @@ app.post("/announce/:id", [auth, info], async (req, res) => {
             }
         }
         await space.save();
+        let spaceArr = [];
+        let announceLength = space.announcements.length;
+        space.announcements.forEach(async (item) => {
+            let obj = {
+                number: announceLength--,
+                ann: item.announcement
+            }
+            await spaceArr.unshift(obj);
+        });
         res.render("content", {
             loggedIn: true,
             uid: req.params.id,
-            announce: req.spaceArr,
+            announce: spaceArr,
             pdfArr: req.pdfArr,
             imgArr: req.imgArr,
             vidArr: req.vidArr,
             otherArr: req.otherArr,
-            createAnnounce: true
+            admin: req.admin,
+            classInfo: req.classInfo,
+            success: true,
+            msg: "Announcement created successfully."
         });
     } catch (error) {
         res.status(500).send(error);
@@ -281,6 +317,7 @@ app.post("/announce/:id", [auth, info], async (req, res) => {
 app.post("/remove/:id", [auth, info], async (req, res) => {
     try {
         const id = req.params.id;
+        console.log(Space);
         const space = await Space.findOne({ _id: id });
         // console.log(space);
         let n = space.announcements.length;
@@ -297,15 +334,27 @@ app.post("/remove/:id", [auth, info], async (req, res) => {
                 }
             });
             await space.save();
+            let spaceArr = [];
+            let announceLength = space.announcements.length;
+            space.announcements.forEach(async (item) => {
+                let obj = {
+                    number: announceLength--,
+                    ann: item.announcement
+                }
+                await spaceArr.unshift(obj);
+            });
             res.render("content", {
                 loggedIn: true,
                 uid: req.params.id,
-                announce: req.spaceArr,
+                announce: spaceArr,
                 pdfArr: req.pdfArr,
                 imgArr: req.imgArr,
                 vidArr: req.vidArr,
                 otherArr: req.otherArr,
-                removeAnnounce: true
+                admin: req.admin,
+                classInfo: req.classInfo,
+                success: true,
+                msg: "Announcement removed successfully."
             });
         }
         else {
@@ -317,7 +366,10 @@ app.post("/remove/:id", [auth, info], async (req, res) => {
                 imgArr: req.imgArr,
                 vidArr: req.vidArr,
                 otherArr: req.otherArr,
-                invalid: true
+                admin: req.admin,
+                classInfo: req.classInfo,
+                danger: true,
+                msg: "Invalid Input."
             });
         }
         // let n = space.announcements.length;
@@ -338,9 +390,9 @@ app.post('/file/:id', [auth, info], (req, res) => {
                 const id = req.params.id;
                 const space = await Space.findOne({ _id: id });
                 const filetype = path.extname(req.file.filename).slice(1);
-                let size = Math.round(req.file.size / 1024);
+                let size = Math.ceil(req.file.size / 1024);
                 if (size >= 1024) {
-                    size = Math.round(size / 1024) + " MB";
+                    size = Math.ceil(size / 1024) + " MB";
                 }
                 else
                     size += " KB"
@@ -353,15 +405,37 @@ app.post('/file/:id', [auth, info], (req, res) => {
                 });
                 await space.save();
                 console.log("File Added Successfully");
+                let pdfArr = [];
+                let imgArr = [];
+                let vidArr = [];
+                let otherArr = [];
+                space.files.forEach(async (file) => {
+                    try {
+                        if (file.fileType === "pdf")
+                            await pdfArr.unshift(file);
+                        else if (file.fileType === "jpg" || file.fileType === "png" || file.fileType === "jpeg")
+                            await imgArr.unshift(file);
+                        else if (file.fileType === "mp4" || file.fileType === "mov")
+                            await vidArr.unshift(file);
+                        else
+                            await otherArr.unshift(file);
+                    } catch (err) {
+                        res.send(err);
+                        console.log(err);
+                    }
+                })
                 res.render("content", {
                     loggedIn: true,
                     uid: req.params.id,
                     announce: req.spaceArr,
-                    pdfArr: req.pdfArr,
-                    imgArr: req.imgArr,
-                    vidArr: req.vidArr,
-                    otherArr: req.otherArr,
-                    fileAdded: true
+                    pdfArr: pdfArr,
+                    imgArr: imgArr,
+                    vidArr: vidArr,
+                    otherArr: otherArr,
+                    admin: req.admin,
+                    classInfo: req.classInfo,
+                    success: true,
+                    msg: "File added successfully."
                 });
             }
         }
@@ -370,6 +444,271 @@ app.post('/file/:id', [auth, info], (req, res) => {
             console.log(err);
         }
     });
+});
+
+app.get("/removeFile/:id/:fileid", [auth, info], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const fileid = req.params.fileid;
+        console.log(id);
+        console.log(fileid);
+        const space = await Space.findOne({ _id: id });
+        space.files = space.files.filter((file) => {
+            if (file._id != fileid)
+                return file;
+            else {
+                fs.unlink(`public${file.path}`, (err) => {
+                    console.log(err);
+                });
+            }
+        })
+        await space.save();
+        let pdfArr = [];
+        let imgArr = [];
+        let vidArr = [];
+        let otherArr = [];
+        space.files.forEach(async (file) => {
+            if (file.fileType === "pdf")
+                await pdfArr.unshift(file);
+            else if (file.fileType === "jpg" || file.fileType === "png" || file.fileType === "jpeg")
+                await imgArr.unshift(file);
+            else if (file.fileType === "mp4" || file.fileType === "mov")
+                await vidArr.unshift(file);
+            else
+                await otherArr.unshift(file);
+        });
+        console.log("File Deleted Successfully");
+        res.render("content", {
+            loggedIn: true,
+            uid: req.params.id,
+            announce: req.spaceArr,
+            pdfArr: pdfArr,
+            imgArr: imgArr,
+            vidArr: vidArr,
+            otherArr: otherArr,
+            admin: req.admin,
+            classInfo: req.classInfo,
+        });
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error);
+    }
+})
+
+app.get("/removeClass/:id", [auth, info], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        req.classInfo.emails.forEach(async (email) => {
+            const user = await User.findOne({ email });
+            user.spaces = user.spaces.filter((spaceId) => {
+                return spaceId.space !== id;
+            });
+            await user.save();
+        });
+        space.files.forEach((file) => {
+            fs.unlink(`public${file.path}`, (err) => {
+                console.log(err);
+            });
+        })
+        await Space.deleteOne({ _id: id });
+        let spaceArr = [];
+        await req.currentUser.spaces.forEach(async (item) => {
+            try {
+                const temp = await Space.findOne({ _id: item.space });
+                // console.log(temp);
+                await spaceArr.push(temp);
+                // console.log(spaceArr);
+            } catch (error) {
+                console.log(error);
+            }
+        });
+        // console.log(spaceArr);
+        res.render("main", {
+            loggedIn: true,
+            classes: spaceArr,
+            success: true,
+            msg: "Class removed successfully."
+        });
+    }
+    catch (err) {
+        res.send(err);
+        console.log(err);
+    }
+})
+
+app.post("/makeAdmin/:id", [auth, info], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        const email = req.body.email;
+        if (email == req.currentUser.email) {
+            res.render("content", {
+                loggedIn: true,
+                uid: req.params.id,
+                announce: req.spaceArr,
+                pdfArr: req.pdfArr,
+                imgArr: req.imgArr,
+                vidArr: req.vidArr,
+                otherArr: req.otherArr,
+                admin: req.admin,
+                classInfo: req.classInfo,
+                primary: true,
+                msg: "One cannot change the admin status of oneself.",
+            });
+        }
+        else {
+            let flag = 0;
+            space.users.forEach((user) => {
+                if (user.email == email) {
+                    user.admin = true;
+                    flag = 1;
+                }
+            });
+            await space.save();
+            if (flag === 0) {
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: req.classInfo,
+                    primary: true,
+                    msg: "No such user exists in the class.",
+                });
+            }
+            else if (flag === 1) {
+                const adminUser = await User.findOne({ email });
+                adminUser.spaces.forEach((spaceId) => {
+                    if (spaceId.space === id)
+                        spaceId.admin = true;
+                });
+                await adminUser.save();
+                let emailArr = [];
+                let adminArr = [];
+                space.users.forEach(async (user) => {
+                    await emailArr.push(user.email);
+                    if (user.admin === true)
+                        await adminArr.push(user.email);
+                })
+                let obj = {
+                    classId: space._id,
+                    className: space.name,
+                    desc: space.description,
+                    emails: emailArr,
+                    admins: adminArr
+                }
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: obj,
+                    success: true,
+                    msg: "Admin Status Changed Successfully.",
+                });
+            }
+        }
+    }
+    catch (err) {
+        res.send(err);
+        console.log(err);
+    }
+});
+
+app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        const email = req.body.email;
+        if (email == req.currentUser.email) {
+            res.render("content", {
+                loggedIn: true,
+                uid: req.params.id,
+                announce: req.spaceArr,
+                pdfArr: req.pdfArr,
+                imgArr: req.imgArr,
+                vidArr: req.vidArr,
+                otherArr: req.otherArr,
+                admin: req.admin,
+                classInfo: req.classInfo,
+                primary: true,
+                msg: "One cannot change the admin status of oneself.",
+            });
+        }
+        else {
+            let flag = 0;
+            space.users.forEach((user) => {
+                if (user.email == email) {
+                    user.admin = false;
+                    flag = 1;
+                }
+            });
+            await space.save();
+            if (flag == 0) {
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: req.classInfo,
+                    primary: true,
+                    msg: "No such user exists in the class.",
+                });
+            }
+            else {
+                const adminUser = await User.findOne({ email });
+                adminUser.spaces.forEach((spaceId) => {
+                    if (spaceId.space === id)
+                        spaceId.admin = false;
+                });
+                await adminUser.save();
+                let emailArr = [];
+                let adminArr = [];
+                space.users.forEach(async (user) => {
+                    await emailArr.push(user.email);
+                    if (user.admin === true)
+                        await adminArr.push(user.email);
+                })
+                let obj = {
+                    classId: space._id,
+                    className: space.name,
+                    desc: space.description,
+                    emails: emailArr,
+                    admins: adminArr
+                }
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: obj,
+                    success: true,
+                    msg: "Admin Status Changed Successfully.",
+                });
+            }
+        }
+    }
+    catch (err) {
+        res.send(err);
+        console.log(err);
+    }
 });
 
 

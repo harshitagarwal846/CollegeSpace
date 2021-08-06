@@ -1,17 +1,17 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const spaceSchema=mongoose.Schema({
-    name:{
-        type:"string",
-        required:true
+const spaceSchema = mongoose.Schema({
+    name: {
+        type: "string",
+        required: true
     },
-    password:{
-        type:"string",
-        required:true
+    password: {
+        type: "string",
+        required: true
     },
-    description:{
-        type:"string",
-        default:""
+    description: {
+        type: "string",
+        default: ""
     },
     announcements: [{
         announcement: {
@@ -38,10 +38,18 @@ const spaceSchema=mongoose.Schema({
         fileType: {
             type: String,
             required: true
+        },
+    }],
+    users: [{
+        email: {
+            type: String,
+        },
+        admin: {
+            type: Boolean
         }
     }]
 })
 
-const Space = new mongoose.model("Space",spaceSchema);
+const Space = new mongoose.model("Space", spaceSchema);
 
-module.exports=Space;
+module.exports = Space;
