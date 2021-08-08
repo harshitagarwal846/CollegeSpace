@@ -2,6 +2,7 @@
 
 <title>Class</title>
 <link rel="stylesheet" href="/main.css">
+<link rel="stylesheet" href="/content.css">
 
 <body>
     {{>navbar}}
@@ -45,31 +46,31 @@
 
 
     {{!-- <p>{{uid}}</p> --}}
-    <div class="container-fluid d-flex flex-column flex-lg-row-reverse">
-        <div style="min-width:25%;height:30rem;" class="border border-dark overflow-auto my-3 mx-1">
+    <div class="container-fluid d-flex flex-column-reverse flex-lg-row-reverse">
+        <div style="min-width:23%;height:30rem;" class="shadow-lg overflow-auto my-3 mx-2 rounded-3">
             <div class="d-flex justify-content-between align-items-center p-2 border border-dark"
-                style="background-color: rgba(0, 0, 0, 0.264);">
-                <div class="fs-4 py-1">Announcements</div>
+                style="background-color: black">
+                <div class="fs-4 py-1 text-light">Announcements</div>
                 {{#if admin}}
-                <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2" data-bs-toggle="modal"
+                <button type="button" class="btn btn-outline-info btn-sm py-1 px-2" data-bs-toggle="modal"
                     data-bs-target="#announcements"><i class="bi bi-pencil-fill"></i> Edit</button>
                 {{/if}}
             </div>
             <div class="container-fluid my-1" style="text-align: justify;">
                 {{#each announce}}
-                <p>{{this.number}}. {{this.ann}}</p>
+                <p><strong>{{this.number}}. </strong>{{this.ann}}</p>
                 <br>
                 {{/each}}
             </div>
         </div>
 
-        <div class="overflow-auto border border-primary my-3" style="min-width:75%;height:30rem">
-            <div class="d-flex justify-content-between align-items-center p-2 border border-dark"
-                style="background-color: rgba(0, 0, 0, 0.264);">
+        <div class="overflow-auto shadow-lg my-3 mx-2 rounded-3" style="min-width:75%;height:30rem">
+            <div class="d-flex justify-content-between align-items-center p-2 border border-dark text-light"
+                style="background-color: black">
                 <div class="fs-4">Notes</div>
                 <div class="d-flex align-items-center justify-content-between">
                     {{#if admin}}
-                    <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2" data-bs-toggle="modal"
+                    <button type="button" class="btn btn-outline-info btn-sm py-1 px-2" data-bs-toggle="modal"
                         data-bs-target="#addFile"><i class="bi bi-pencil-fill"></i> Edit</button>
                     {{/if}}
                     <a data-bs-toggle="offcanvas" href="#classCanvas" role="button" aria-controls="classCanvas"
@@ -78,13 +79,15 @@
                 </div>
             </div>
             {{#if pdfArr}}
-            <div class="container">
+            <div class="container-fluid">
                 <p class="text-center fs-1 my-2">PDFs</p>
                 <hr class="mt-0">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                <div
+                    class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 justify-content-center justify-content-sm-between justify-content-md-around g-4 p-2">
                     {{#each pdfArr}}
-                    <div class="col border my-2 p-2 d-flex flex-column justify-content-between"
-                        style="min-height: 10rem">
+                    {{!-- d-flex flex-column justify-content-between --}}
+                    <div class="col border my-2 p-2 border d-flex flex-column justify-content-between border-dark border-2"
+                        style="max-width: 20rem;min-height: 10rem;background-color: white">
                         <div class="d-flex justify-content-between">
                             <p class="fs-5 fw-bold d-inline-block">{{this.displayName}}</p>
                             {{#if ../admin}}
@@ -106,10 +109,11 @@
             <div class="container">
                 <p class="text-center fs-1 my-2">Images</p>
                 <hr class="mt-0">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                <div
+                    class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 justify-content-center justify-content-sm-between justify-content-md-around g-4 p-2">
                     {{#each imgArr}}
-                    <div class="col border my-2 p-2 d-flex flex-column justify-content-between"
-                        style="min-height: 10rem">
+                    <div class="col border my-2 p-2 border d-flex flex-column justify-content-between border-dark border-2"
+                        style="max-width: 20rem;min-height: 10rem;background-color: white">
                         <div class="d-flex justify-content-between">
                             <p class="fs-5 fw-bold d-inline-block">{{this.displayName}}</p>
                             {{#if ../admin}}
@@ -130,10 +134,11 @@
             <div class="container">
                 <p class="text-center fs-1 my-2">Videos</p>
                 <hr class="mt-0">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                <div
+                    class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 justify-content-center justify-content-sm-between justify-content-md-around g-4 p-2">
                     {{#each vidArr}}
-                    <div class="col border my-2 p-2 d-flex flex-column justify-content-between"
-                        style="min-height: 10rem">
+                    <div class="col border my-2 p-2 border d-flex flex-column justify-content-between border-dark border-2"
+                        style="max-width: 20rem;min-height: 10rem;background-color: white">
                         <div class="d-flex justify-content-between">
                             <p class="fs-5 fw-bold d-inline-block">{{this.displayName}}</p>
                             {{#if ../admin}}
@@ -154,10 +159,11 @@
             <div class="container">
                 <p class="text-center fs-1 my-2">Others</p>
                 <hr class="mt-0">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 p-2">
+                <div
+                    class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 justify-content-center justify-content-sm-between justify-content-md-around g-4 p-2">
                     {{#each otherArr}}
-                    <div class="col border my-2 p-2 d-flex flex-column justify-content-between"
-                        style="min-height: 10rem">
+                    <div class="col border my-2 p-2 border d-flex flex-column justify-content-between border-dark border-2"
+                        style="max-width: 20rem;min-height: 10rem;background-color: white">
                         <div class="d-flex justify-content-between">
                             <p class="fs-5 fw-bold d-inline-block">{{this.displayName}}</p>
                             {{#if ../admin}}
@@ -178,7 +184,8 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-start vw-75" data-bs-scroll="true" tabindex="-1" id="classCanvas" aria-labelledby="classCanvasLabel">
+    <div class="offcanvas offcanvas-start vw-75" data-bs-scroll="true" tabindex="-1" id="classCanvas"
+        aria-labelledby="classCanvasLabel">
         <div class="offcanvas-header">
             <div class="offcanvas-title border-bottom border-3 border-dark fs-4" id="classCanvasLabel">
                 {{classInfo.className}}
@@ -230,11 +237,11 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="removeClassLabel">Warning</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="removeClassLabel">Warning</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete? All data including the files will be permanently deleted.</p>
+                    <p>Are you sure you want to delete? All data including the files will be permanently deleted. The class will no longer be visible to anyone</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary"><a href="/removeClass/{{uid}}"
@@ -249,7 +256,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="adminStatusLabel">Make Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="adminStatusLabel">Make Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -282,7 +289,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="removeAdminLabel">Remove Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="removeAdminLabel">Remove Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -311,7 +318,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="announcementModalLabel">Add Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="announcementModalLabel">Add Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -321,8 +328,8 @@
                             <textarea class="form-control" id="makeAdmin" rows="2" name="announcement"></textarea>
                         </div>
                         <div class="col-12 text-muted">
-                            <p style="text-align: justify;"><strong>Note: </strong>A maximum of 10 announcements can be
-                                added. After 10 announcements, the 11th announcement will automatically be removed.</p>
+                            <p style="text-align: justify;"><strong>Note: </strong>A maximum of 15 announcements can be
+                                added. After 15 announcements, the 16th announcement will automatically be removed.</p>
                         </div>
                         <p class="text-center">To remove an announcement <a data-bs-toggle="modal"
                                 data-bs-dismiss="modal" href="#remove">Click Here</a></p>
@@ -342,7 +349,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addFile1mentModalLabel">Remove Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="addFile1mentModalLabel">Remove Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -370,7 +377,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addFile1mentModalLabel">Add File</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="addFile1mentModalLabel">Add File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -412,6 +419,7 @@
     </div>
 
     {{>footer}}
+    {{>newspace}}
 </body>
 
 <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

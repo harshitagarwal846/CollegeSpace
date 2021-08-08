@@ -279,8 +279,8 @@ app.post("/announce/:id", [auth, info], async (req, res) => {
         space.announcements = space.announcements.concat({ announcement: req.body.announcement });
         await space.save();
         let n = space.announcements.length;
-        if (n > 10) {
-            while (n > 10) {
+        if (n > 15) {
+            while (n > 15) {
                 space.announcements.shift();
                 n--;
             }
