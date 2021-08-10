@@ -70,10 +70,12 @@ app.get('/main', auth, async (req, res) => {
             }
         });
         // console.log(spaceArr);
-        res.render("main", {
-            loggedIn: true,
-            classes: spaceArr
-        });
+        setTimeout(() => {
+            res.render("main", {
+                loggedIn: true,
+                classes: spaceArr
+            });
+        },1000);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
@@ -198,22 +200,24 @@ app.post("/createClass", auth, async (req, res) => {
         });
         await req.currentUser.save();
         let spaceArr = [];
-        req.currentUser.spaces.forEach(async (item) => {
+        await req.currentUser.spaces.forEach(async (item) => {
             try {
                 const temp = await Space.findOne({ _id: item.space });
-                // console.log(temp);
+                console.log(temp);
                 await spaceArr.push(temp);
                 // console.log(spaceArr);
             } catch (error) {
                 console.log(error);
             }
         });
-        res.render("main", {
-            loggedIn: true,
-            classes: spaceArr,
-            success: true,
-            msg: "Class created successfully."
-        });
+        setTimeout(() => {
+            res.render("main", {
+                loggedIn: true,
+                classes: spaceArr,
+                success: true,
+                msg: "Class created successfully."
+            });
+        },1000);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
@@ -247,11 +251,14 @@ app.post("/joinClass", auth, async (req, res) => {
                     console.log(error);
                 }
             });
-            res.render("main", {
-                loggedIn: true,
-                classcreate: true,
-                classes: spaceArr
-            });
+            setTimeout(() => {
+                res.render("main", {
+                    loggedIn: true,
+                    classes: spaceArr,
+                    success: true,
+                    msg: "Class added successfully"
+                });
+            },1000);
         }
         else
             res.send("Invalid Credentials");
@@ -539,13 +546,14 @@ app.get("/removeClass/:id", [auth, info], async (req, res) => {
                     console.log(error);
                 }
             });
-            // console.log(spaceArr);
-            res.render("main", {
-                loggedIn: true,
-                classes: spaceArr,
-                success: true,
-                msg: "Class removed successfully."
-            });
+            setTimeout(() => {
+                res.render("main", {
+                    loggedIn: true,
+                    classes: spaceArr,
+                    success: true,
+                    msg: "Class removed successfully."
+                });
+            },1500);
         }
     }
     catch (err) {
