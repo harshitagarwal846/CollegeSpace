@@ -25,9 +25,9 @@ const auth = async (req, res, next) => {
 const info = async (req, res, next) => {
     try {
         const id = req.params.id;
-        let admin; 
+        let admin;
         req.currentUser.spaces.forEach((spaceId) => {
-            if(spaceId.space === id)
+            if (spaceId.space === id)
                 admin = spaceId.admin;
         })
         // console.log(admin);
@@ -59,8 +59,8 @@ const info = async (req, res, next) => {
         let adminArr = [];
         space.users.forEach(async (user) => {
             await emailArr.push(user.email);
-            if(user.admin === true)
-            await adminArr.push(user.email);
+            if (user.admin === true)
+                await adminArr.push(user.email);
         })
         let obj = {
             classId: space._id,
@@ -85,4 +85,4 @@ const info = async (req, res, next) => {
     }
 }
 
-module.exports = { auth,info };
+module.exports = { auth, info };

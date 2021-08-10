@@ -56,7 +56,7 @@
                     data-bs-target="#announcements"><i class="bi bi-pencil-fill"></i> Edit</button>
                 {{/if}}
             </div>
-            <div class="container-fluid my-1" style="text-align: justify;">
+            <div class="container-fluid my-1 text-break" style="text-align: justify;">
                 {{#each announce}}
                 <p><strong>{{this.number}}. </strong>{{this.ann}}</p>
                 <br>
@@ -219,7 +219,7 @@
                     </ul>
                 </li>
             </ul>
-            {{!-- {{#if admin}} --}}
+            {{#if admin}}
             <div class="text-center">
                 <button type="button" class="btn btn-primary my-2 w-75 rounded" data-bs-toggle="modal"
                     data-bs-target="#makeAdmin">Change Admin Status</a></button>
@@ -228,7 +228,7 @@
                 <button type="button" class="btn btn-danger my-2 w-75 rounded" data-bs-toggle="modal"
                     data-bs-target="#removeClass">Remove Class</a></button>
             </div>
-            {{!-- {{/if}} --}}
+            {{/if}}
         </div>
     </div>
 
@@ -237,7 +237,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="removeClassLabel">Warning</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25" id="removeClassLabel">Warning</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -256,7 +256,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="adminStatusLabel">Make Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="adminStatusLabel">Make Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -289,7 +289,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="removeAdminLabel">Remove Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="removeAdminLabel">Remove Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -318,7 +318,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="announcementModalLabel">Add Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="announcementModalLabel">Add Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -349,7 +349,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="addFile1mentModalLabel">Remove Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="addFile1mentModalLabel">Remove Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -377,7 +377,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-50" id="addFile1mentModalLabel">Add File</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25" id="addFile1mentModalLabel">Add File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -396,6 +396,7 @@
                                 <li>
                                     <ul>
                                         <li>All fields are required.</li>
+                                        <li>Maximum file size permitted is 100MB.</li>
                                         <li>Preferred file extensions are .pdf, .jpg, .jpeg, .png, .mp4, .mov</li>
                                         <li>Any other file extensions apart from the ones mentioned above will be placed
                                             under Others heading.</li>

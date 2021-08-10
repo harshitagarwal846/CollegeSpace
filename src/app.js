@@ -132,11 +132,20 @@ app.post("/login", async (req, res) => { //sign in feature
                 lname: user.lastname
             });
         }
-        else
-            res.send("Invalid Credentials");
+        else {
+            res.status(400).render("index", {
+                loggedIn: false,
+                // loggedOut: !user.isLoggedIn,
+                invalid: true
+            });
+        }
     }
     catch (error) {
-        res.status(400).send("Invalid Credentials");
+        res.status(400).render("index", {
+            loggedIn: false,
+            // loggedOut: !user.isLoggedIn,
+            invalid: true
+        });
     }
 })
 
@@ -498,38 +507,46 @@ app.get("/removeFile/:id/:fileid", [auth, info], async (req, res) => {
 app.get("/removeClass/:id", [auth, info], async (req, res) => {
     try {
         const id = req.params.id;
-        const space = await Space.findOne({ _id: id });
-        req.classInfo.emails.forEach(async (email) => {
-            const user = await User.findOne({ email });
-            user.spaces = user.spaces.filter((spaceId) => {
-                return spaceId.space !== id;
+        if (req.admin === false) {
+            res.render("main", {
+                loggedIn: true,
+                classes: req.spaceArr
             });
-            await user.save();
-        });
-        space.files.forEach((file) => {
-            fs.unlink(`public${file.path}`, (err) => {
-                console.log(err);
+        }
+        else {
+            const space = await Space.findOne({ _id: id });
+            req.classInfo.emails.forEach(async (email) => {
+                const user = await User.findOne({ email });
+                user.spaces = user.spaces.filter((spaceId) => {
+                    return spaceId.space !== id;
+                });
+                await user.save();
             });
-        })
-        await Space.deleteOne({ _id: id });
-        let spaceArr = [];
-        await req.currentUser.spaces.forEach(async (item) => {
-            try {
-                const temp = await Space.findOne({ _id: item.space });
-                // console.log(temp);
-                await spaceArr.push(temp);
-                // console.log(spaceArr);
-            } catch (error) {
-                console.log(error);
-            }
-        });
-        // console.log(spaceArr);
-        res.render("main", {
-            loggedIn: true,
-            classes: spaceArr,
-            success: true,
-            msg: "Class removed successfully."
-        });
+            space.files.forEach((file) => {
+                fs.unlink(`public${file.path}`, (err) => {
+                    console.log(err);
+                });
+            })
+            await Space.deleteOne({ _id: id });
+            let spaceArr = [];
+            await req.currentUser.spaces.forEach(async (item) => {
+                try {
+                    const temp = await Space.findOne({ _id: item.space });
+                    // console.log(temp);
+                    await spaceArr.push(temp);
+                    // console.log(spaceArr);
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            // console.log(spaceArr);
+            res.render("main", {
+                loggedIn: true,
+                classes: spaceArr,
+                success: true,
+                msg: "Class removed successfully."
+            });
+        }
     }
     catch (err) {
         res.send(err);
