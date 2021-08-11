@@ -8,7 +8,7 @@ checkbox1.addEventListener("click", () => {
         password1.type = "password";
 });
 
-let checkbox2 = document.getElementById("flexCheckDefault2");
+let checkbox2 = document.getElementById("joinClass3");
 let password2 = document.getElementById("joinClass2");
 
 checkbox2.addEventListener("click", () => {
@@ -18,7 +18,4 @@ checkbox2.addEventListener("click", () => {
         password2.type = "password";
 });
 
-function remove(){
-    alert("hi");
-}
 

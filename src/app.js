@@ -75,7 +75,7 @@ app.get('/main', auth, async (req, res) => {
                 loggedIn: true,
                 classes: spaceArr
             });
-        },1000);
+        }, 1000);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
@@ -213,7 +213,7 @@ app.post("/createClass", auth, async (req, res) => {
                 success: true,
                 msg: "Class created successfully."
             });
-        },1000);
+        }, 1000);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
@@ -254,7 +254,7 @@ app.post("/joinClass", auth, async (req, res) => {
                     success: true,
                     msg: "Class added successfully"
                 });
-            },1000);
+            }, 1000);
         }
         else
             res.send("Invalid Credentials");
@@ -549,7 +549,7 @@ app.get("/removeClass/:id", [auth, info], async (req, res) => {
                     success: true,
                     msg: "Class removed successfully."
                 });
-            },1500);
+            }, 1500);
         }
     }
     catch (err) {
@@ -603,12 +603,12 @@ app.post("/makeAdmin/:id", [auth, info], async (req, res) => {
                 });
             }
             else if (flag === 1) {
-                const adminUser = await User.findOne({ email });
-                adminUser.spaces.forEach((spaceId) => {
+                const removeuser = await User.findOne({ email });
+                removeuser.spaces.forEach((spaceId) => {
                     if (spaceId.space === id)
                         spaceId.admin = true;
                 });
-                await adminUser.save();
+                await removeuser.save();
                 let emailArr = [];
                 let adminArr = [];
                 space.users.forEach(async (user) => {
@@ -690,12 +690,12 @@ app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
                 });
             }
             else {
-                const adminUser = await User.findOne({ email });
-                adminUser.spaces.forEach((spaceId) => {
+                const removeuser = await User.findOne({ email });
+                removeuser.spaces.forEach((spaceId) => {
                     if (spaceId.space === id)
                         spaceId.admin = false;
                 });
-                await adminUser.save();
+                await removeuser.save();
                 let emailArr = [];
                 let adminArr = [];
                 space.users.forEach(async (user) => {
@@ -722,6 +722,92 @@ app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
                     classInfo: obj,
                     success: true,
                     msg: "Admin Status Changed Successfully.",
+                });
+            }
+        }
+    }
+    catch (err) {
+        res.send(err);
+        console.log(err);
+    }
+});
+
+app.post("/removeUser/:id", [auth, info], async (req, res) => {
+    try {
+        const id = req.params.id;
+        const space = await Space.findOne({ _id: id });
+        const email = req.body.email;
+        if (email == req.currentUser.email) {
+            res.render("content", {
+                loggedIn: true,
+                uid: req.params.id,
+                announce: req.spaceArr,
+                pdfArr: req.pdfArr,
+                imgArr: req.imgArr,
+                vidArr: req.vidArr,
+                otherArr: req.otherArr,
+                admin: req.admin,
+                classInfo: req.classInfo,
+                primary: true,
+                msg: "One cannot remove oneself.",
+            });
+        }
+        else {
+            let flag = 0;
+            space.users = space.users.filter((user) => {
+                if (user.email == email)
+                    flag = 1;
+                else
+                    return user;
+            })
+            await space.save();
+            if (flag == 0) {
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: req.classInfo,
+                    primary: true,
+                    msg: "No such user exists in the class.",
+                });
+            }
+            else {
+                const removeuser = await User.findOne({ email });
+                removeuser.spaces = removeuser.spaces.filter((spaceId) => {
+                    return spaceId.space !== id;
+                });
+                await removeuser.save();
+                let emailArr = [];
+                let adminArr = [];
+                space.users.forEach(async (user) => {
+                    await emailArr.push(user.email);
+                    if (user.admin === true)
+                        await adminArr.push(user.email);
+                })
+                let obj = {
+                    classId: space._id,
+                    className: space.name,
+                    desc: space.description,
+                    emails: emailArr,
+                    admins: adminArr
+                }
+                res.render("content", {
+                    loggedIn: true,
+                    uid: req.params.id,
+                    announce: req.spaceArr,
+                    pdfArr: req.pdfArr,
+                    imgArr: req.imgArr,
+                    vidArr: req.vidArr,
+                    otherArr: req.otherArr,
+                    admin: req.admin,
+                    classInfo: obj,
+                    success: true,
+                    msg: "User removed successfully.",
                 });
             }
         }
