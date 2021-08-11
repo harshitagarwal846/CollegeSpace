@@ -91,9 +91,7 @@ app.post("/register", async (req, res) => { //registering user
         if (password === confirmpassword) {
             const userData = new User(req.body);
             const token = await userData.generateToken(); //generating jwt token
-            res.cookie("jwt", token, {
-                expires: new Date(Date.now() + 600000)
-            });
+            res.cookie("jwt", token);
             await userData.save();
             res.status(200).render("index", {
                 loggedIn: true,
@@ -121,9 +119,7 @@ app.post("/login", async (req, res) => { //sign in feature
 
         const token = await user.generateToken();
         // console.log(token);
-        res.cookie("jwt", token, {
-            expires: new Date(Date.now() + 6000000)
-        });
+        res.cookie("jwt", token);
 
         if (user.password === password) {
             res.status(200).render("index", {
