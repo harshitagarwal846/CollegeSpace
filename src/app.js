@@ -7,7 +7,9 @@ const hbs = require('hbs');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
 const { auth, info } = require("./middleware.js");
+const cloudinary = require('cloudinary');
 
+require("../db/cloudinary.js"); //configuring cloudinary
 require("../db/conn.js"); //connecting to mongodb
 
 const Contact = require("../db/contact.js"); //access to the Contact model
@@ -29,9 +31,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 let storage = multer.diskStorage({
-    destination: ((req, file, cb) => {
-        cb(null, "public/uploads/")
-    }),
+    // destination: ((req, file, cb) => {
+    //     cb(null, "public/uploads/")
+    // }),
     filename: ((req, file, cb) => {
         const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
         cb(null, uniqueName);
@@ -69,7 +71,9 @@ app.get('/main', auth, async (req, res) => {
                 console.log(error);
             }
         });
-        // console.log(spaceArr);
+        // console.log(req.protocol);
+        // console.log(req.get('host'));
+        // console.log(req.originalUrl);
         setTimeout(() => {
             res.render("main", {
                 loggedIn: true,
@@ -276,6 +280,7 @@ app.get("/main/:id", [auth, info], async (req, res) => {
             otherArr: req.otherArr,
             admin: req.admin,
             classInfo: req.classInfo,
+            joinSpace: req.url
         });
     }
     catch (error) {
@@ -317,6 +322,7 @@ app.post("/announce/:id", [auth, info], async (req, res) => {
             otherArr: req.otherArr,
             admin: req.admin,
             classInfo: req.classInfo,
+            joinSpace: req.url,
             success: true,
             msg: "Announcement created successfully."
         });
@@ -365,6 +371,7 @@ app.post("/remove/:id", [auth, info], async (req, res) => {
                 otherArr: req.otherArr,
                 admin: req.admin,
                 classInfo: req.classInfo,
+                joinSpace: req.url,
                 success: true,
                 msg: "Announcement removed successfully."
             });
@@ -399,6 +406,13 @@ app.post('/file/:id', [auth, info], (req, res) => {
                 console.log(err);
             }
             else {
+                // res.send(req.file);
+                const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                    resource_type: "auto",
+                    public_id: path.basename(req.file.filename)
+                });
+                console.log(path.basename(req.file.filename));
+                // res.send(result.url);
                 const id = req.params.id;
                 const space = await Space.findOne({ _id: id });
                 const filetype = path.extname(req.file.filename).slice(1);
@@ -410,7 +424,8 @@ app.post('/file/:id', [auth, info], (req, res) => {
                     size += " KB"
                 space.files = space.files.concat({
                     fileName: req.file.filename,
-                    path: req.file.path.slice(6),
+                    // path: req.file.path.slice(6),
+                    path: result.url,
                     size,
                     fileType: filetype.toLowerCase(),
                     displayName: req.body.displayName,
@@ -446,13 +461,14 @@ app.post('/file/:id', [auth, info], (req, res) => {
                     otherArr: otherArr,
                     admin: req.admin,
                     classInfo: req.classInfo,
+                    joinSpace: req.url,
                     success: true,
                     msg: "File added successfully."
                 });
             }
         }
         catch (err) {
-            res.status(500).send(err);
+            res.status(500).send("Error Uploading File");
             console.log(err);
         }
     });
@@ -469,9 +485,8 @@ app.get("/removeFile/:id/:fileid", [auth, info], async (req, res) => {
             if (file._id != fileid)
                 return file;
             else {
-                fs.unlink(`public${file.path}`, (err) => {
-                    console.log(err);
-                });
+                cloudinary.v2.api.delete_resources([file.fileName],
+                    function (error, result) { console.log(result, error); });
             }
         })
         await space.save();
@@ -500,6 +515,7 @@ app.get("/removeFile/:id/:fileid", [auth, info], async (req, res) => {
             otherArr: otherArr,
             admin: req.admin,
             classInfo: req.classInfo,
+            joinSpace: req.url
         });
     } catch (error) {
         res.status(500).send(error);
@@ -526,9 +542,9 @@ app.get("/removeClass/:id", [auth, info], async (req, res) => {
                 await user.save();
             });
             space.files.forEach((file) => {
-                fs.unlink(`public${file.path}`, (err) => {
-                    console.log(err);
-                });
+                cloudinary.v2.api.delete_resources([file.fileName],
+                    function (error, result) { console.log(result, error); });
+
             })
             await Space.deleteOne({ _id: id });
             let spaceArr = [];
@@ -574,6 +590,7 @@ app.post("/makeAdmin/:id", [auth, info], async (req, res) => {
                 otherArr: req.otherArr,
                 admin: req.admin,
                 classInfo: req.classInfo,
+                joinSpace: req.url,
                 primary: true,
                 msg: "One cannot change the admin status of oneself.",
             });
@@ -598,6 +615,7 @@ app.post("/makeAdmin/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: req.classInfo,
+                    joinSpace: req.url,
                     primary: true,
                     msg: "No such user exists in the class.",
                 });
@@ -633,6 +651,7 @@ app.post("/makeAdmin/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: obj,
+                    joinSpace: req.url,
                     success: true,
                     msg: "Admin Status Changed Successfully.",
                 });
@@ -661,6 +680,7 @@ app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
                 otherArr: req.otherArr,
                 admin: req.admin,
                 classInfo: req.classInfo,
+                joinSpace: req.url,
                 primary: true,
                 msg: "One cannot change the admin status of oneself.",
             });
@@ -685,6 +705,7 @@ app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: req.classInfo,
+                    joinSpace: req.url,
                     primary: true,
                     msg: "No such user exists in the class.",
                 });
@@ -720,6 +741,7 @@ app.post("/removeAdmin/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: obj,
+                    joinSpace: req.url,
                     success: true,
                     msg: "Admin Status Changed Successfully.",
                 });
@@ -748,6 +770,7 @@ app.post("/removeUser/:id", [auth, info], async (req, res) => {
                 otherArr: req.otherArr,
                 admin: req.admin,
                 classInfo: req.classInfo,
+                joinSpace: req.url,
                 primary: true,
                 msg: "One cannot remove oneself.",
             });
@@ -772,6 +795,7 @@ app.post("/removeUser/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: req.classInfo,
+                    joinSpace: req.url,
                     primary: true,
                     msg: "No such user exists in the class.",
                 });
@@ -806,6 +830,7 @@ app.post("/removeUser/:id", [auth, info], async (req, res) => {
                     otherArr: req.otherArr,
                     admin: req.admin,
                     classInfo: obj,
+                    joinSpace: req.url,
                     success: true,
                     msg: "User removed successfully.",
                 });
@@ -815,6 +840,67 @@ app.post("/removeUser/:id", [auth, info], async (req, res) => {
     catch (err) {
         res.send(err);
         console.log(err);
+    }
+});
+
+app.get("/join/:id", auth, async (req,res) => {
+    try{
+        const id = req.params.id;
+        const space = await Space.findOne({_id: id});
+        // console.log(space);
+        res.render("join",{
+            uid:id,
+            name:space.name,
+            desc:space.description
+        });
+    }
+    catch(err){
+        res.status(500).send(err);
+        console.log(err);
+    }
+});
+
+app.post("/join/:id", auth, async (req,res) =>{
+    try {
+        const id = req.params.id;
+        const password = req.body.password;
+        const user = await Space.findOne({ _id: id });
+        if (user.password === password) {
+            req.currentUser.spaces = req.currentUser.spaces.concat({
+                space: id,
+                admin: false
+            });
+            await req.currentUser.save();
+            user.users = user.users.concat({
+                email: req.currentUser.email,
+                admin: false
+            });
+            await user.save();
+            let spaceArr = [];
+            req.currentUser.spaces.forEach(async (item) => {
+                try {
+                    const temp = await Space.findOne({ _id: item.space });
+                    // console.log(temp);
+                    await spaceArr.push(temp);
+                    // console.log(spaceArr);
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+            setTimeout(() => {
+                res.render("main", {
+                    loggedIn: true,
+                    classes: spaceArr,
+                    success: true,
+                    msg: "Class added successfully"
+                });
+            }, 1000);
+        }
+        else
+            res.send("Invalid Credentials");
+    } catch (error) {
+        res.status(400).send("Invalid Credentials");
+        console.log(error);
     }
 });
 

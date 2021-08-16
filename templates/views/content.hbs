@@ -194,7 +194,15 @@
         </div>
         <div class="offcanvas-body">
             <div>
-                <p><strong>Unique Id: </strong>{{classInfo.classId}}</p>
+                <label for="uniqueid"><strong>Unique ID: </strong></label>
+                <p id="uniqueId" class="d-inline-block" value={{classInfo.classId}}>{{classInfo.classId}}</p>
+            </div>
+            <div class="d-flex justify-content-around">
+                <button type="button" id="copyUid" class="btn btn-outline-primary btn-sm"
+                    data-clipboard-target="#uniqueId" data-bs-toggle="popover" title="Copied"
+                    data-bs-trigger="focus">Copy UID</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-clipboard-text={{joinSpace}} data-bs-toggle="popover" title="Copied"
+                    data-bs-trigger="focus">Copy Class Link</button>
             </div>
             <div class="my-2">
                 <p><strong>Description: </strong>{{classInfo.desc}}</p>
@@ -241,11 +249,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25" id="removeClassLabel">Warning</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25"
+                        id="removeClassLabel">Warning</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete? All data including the files will be permanently deleted. The class will no longer be visible to anyone</p>
+                    <p>Are you sure you want to delete? All data including the files will be permanently deleted. The
+                        class will no longer be visible to anyone</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary"><a href="/removeClass/{{uid}}"
@@ -260,7 +270,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="adminStatusLabel">Make Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="adminStatusLabel">Make
+                        Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -293,7 +304,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="removeAdminLabel">Remove Admin</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="removeAdminLabel">
+                        Remove Admin</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -321,7 +333,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="removeUserLabel">Remove User</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="removeUserLabel">Remove
+                        User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -331,8 +344,8 @@
                             <input type="email" class="form-control" id="removeUser1" rows="2" name="email"
                                 placeholder="Email of the user who needs to be removed"></input>
                         </div>
-                        {{!-- <p class="text-center">To make a user admin <a data-bs-toggle="modal" data-bs-dismiss="modal"
-                                href="#makeAdmin">Click Here</a></p> --}}
+                        {{!-- <p class="text-center">To make a user admin <a data-bs-toggle="modal"
+                                data-bs-dismiss="modal" href="#makeAdmin">Click Here</a></p> --}}
                         <div class="modal-footer d-flex justify-content-center mx-auto w-100">
                             <button type="submit" class="btn btn-primary w-50">Remove</button>
                         </div>
@@ -350,7 +363,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="announcementModalLabel">Add Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded"
+                        id="announcementModalLabel">Add Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -381,7 +395,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded" id="addFile1mentModalLabel">Remove Announcement</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded"
+                        id="addFile1mentModalLabel">Remove Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -409,7 +424,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25" id="addFile1mentModalLabel">Add File</h5>
+                    <h5 class="modal-title bg-primary text-light d-inline-block p-2 rounded text-center w-25"
+                        id="addFile1mentModalLabel">Add File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -460,6 +476,17 @@
 <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
+
+<script>
+    new ClipboardJS('.btn');
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    })
+</script>
 
 
 
