@@ -19,6 +19,14 @@
     body {
         background-image: linear-gradient(-225deg, #9bcbf5 0%, #B8DCFF 48%, #9bcbf5 100%);
     }
+    @media (min-width: 769px){
+        .width1{
+            width:35%
+        }
+        .width2{
+            width:90%
+        } 
+    }
 </style>
 
 <body>
@@ -26,8 +34,8 @@
         <p class="text-center fs-2 text-light p-2" style="font-family: 'Noticia Text', serif;">CollegeSpace</p>
     </div>
     <div class="d-flex align-items-center justify-content-center" style="height:80vh">
-        <div class="d-flex align-items-center justify-content-center shadow-lg bg-light rounded" style="width: 35%;">
-            <div class="d-flex flex-column align-items-center justify-content-center p-2" style="width:90%">
+        <div class="d-flex align-items-center justify-content-center shadow-lg bg-light rounded width1">
+            <div class="d-flex flex-column align-items-center justify-content-center p-2 width2" >
                 <p class="my-1 fs-5">You have been invited to join</p>
                 <p class="fs-3 mb-0 text-primary">{{{name}}}</p>
                 {{#if desc}}
