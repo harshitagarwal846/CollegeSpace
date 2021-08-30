@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "clipboard": "^2.0.8",
     "cloudinary": "^1.26.3",
     "cookie-parser": "^1.4.5",
@@ -19,10 +20,8 @@
     "express": "^4.17.1",
     "hbs": "^4.1.2",
     "jsonwebtoken": "^8.5.1",
-    "linkifyjs": "^3.0.0-beta.3",
     "mongoose": "^5.12.14",
     "multer": "^1.4.2",
-    "uuid": "^8.3.2",
     "validator": "^13.6.0"
   }
 }

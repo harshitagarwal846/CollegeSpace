@@ -73,8 +73,12 @@ const info = async (req, res, next) => {
             admins: adminArr
         }
         // console.log(obj);
-        const url = `${req.protocol}://${req.get('host')}/join/${id}`
-        // console.log(url);
+        const url = `${req.protocol}://${req.get('host')}/join/${id}`;
+        const urlObj={
+            url,
+            whatsapp:`whatsapp://send?text= ${url}`,
+        }
+        // console.log(urlObj);
         req.pdfArr = pdfArr; //Array of PDFs
         req.imgArr = imgArr; //Array of Images
         req.vidArr = vidArr; //Array of Videos
@@ -82,7 +86,7 @@ const info = async (req, res, next) => {
         req.spaceArr = spaceArr; //Array of Announcements
         req.admin = admin; //Stores if the user is the admin of current space or not
         req.classInfo = obj //Stores the details of the class
-        req.url = url //Stores the space joining link
+        req.url = urlObj //Stores the space joining link
         next();
     }
     catch (err) {

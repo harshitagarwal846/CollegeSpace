@@ -4,6 +4,18 @@
 <link rel="stylesheet" href="/main.css">
 <link rel="stylesheet" href="/content.css">
 
+<style>
+    .btn-outline-whatsapp{
+        color: #4ec25a;
+        border-color: #4ec25a;
+    }
+    .btn-outline-whatsapp:hover{
+        color: #fff;
+        background-color: #4ec25a;
+        border-color: #4ec25a;
+    }
+</style>
+
 <body>
     {{>navbar}}
     {{>symbols}}
@@ -198,11 +210,14 @@
                 <p id="uniqueId" class="d-inline-block" value={{classInfo.classId}}>{{classInfo.classId}}</p>
             </div>
             <div class="d-flex justify-content-around">
-                <button type="button" id="copyUid" class="btn btn-outline-primary btn-sm"
-                    data-clipboard-target="#uniqueId" data-bs-toggle="popover" title="Copied"
-                    data-bs-trigger="focus">Copy UID</button>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-clipboard-text={{joinSpace}} data-bs-toggle="popover" title="Copied"
-                    data-bs-trigger="focus">Copy Class Link</button>
+                <button type="button" id="copy1" class="btn btn-outline-primary btn-sm copy" style="width:40%"
+                    data-clipboard-target="#uniqueId">Copy UID</button>
+                <button type="button" id='copy2' class="btn btn-outline-primary btn-sm copy" style="width:40%"
+                    data-clipboard-text={{joinSpace.url}}>Copy
+                    Class Link</button>
+            </div>
+            <div class="text-center my-3">
+                <button type="button" class="btn btn-outline-whatsapp" onclick="window.open('{{joinSpace.whatsapp}}')"><i class="bi bi-whatsapp"></i> Share link via Whatsapp</button>
             </div>
             <div class="my-2">
                 <p><strong>Description: </strong>{{classInfo.desc}}</p>
@@ -480,12 +495,42 @@
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
 
 <script>
-    new ClipboardJS('.btn');
+    new ClipboardJS('.copy');
 
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl)
-    })
+    let throttle1 = 0;
+    let copy1 = document.getElementById("copy1");
+    copy1.addEventListener("click", () => {
+        if (!throttle1) {
+            let old = copy1.innerHTML;
+            copy1.innerHTML = "Copied"
+            copy1.classList.add("btn-primary");
+            copy1.classList.remove("btn-outline-primary");
+            throttle1 = setTimeout(() => {
+                copy1.innerHTML = old;
+                copy1.classList.remove("btn-primary");
+                copy1.classList.add("btn-outline-primary");
+                throttle1 = 0;
+            }, 2000);
+        }
+    });
+    
+    let throttle2 = 0;
+    let copy2 = document.getElementById("copy2");
+    copy2.addEventListener("click", () => {
+        if (!throttle2) {
+            let old = copy2.innerHTML;
+            copy2.innerHTML = "Copied"
+            copy2.classList.add("btn-primary");
+            copy2.classList.remove("btn-outline-primary");
+            throttle2 = setTimeout(() => {
+                copy2.innerHTML = old;
+                copy2.classList.remove("btn-primary");
+                copy2.classList.add("btn-outline-primary");
+                throttle2 = 0;
+            }, 2000);
+        }
+    });
+    
 </script>
 
 

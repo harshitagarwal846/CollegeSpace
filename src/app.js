@@ -8,6 +8,7 @@ const multer = require('multer');
 const cookieParser = require('cookie-parser');
 const { auth, info } = require("./middleware.js");
 const cloudinary = require('cloudinary');
+const bcrypt = require("bcryptjs");
 
 require("../db/cloudinary.js"); //configuring cloudinary
 require("../db/conn.js"); //connecting to mongodb
@@ -52,7 +53,7 @@ app.get('/', auth, (req, res) => {
     res.render("index", {
         // loggedOut: false,
         loggedInNow: true,
-        loggedIn: true,
+        loggedIn: req.currentUser.isLoggedIn,
         fname: req.currentUser.firstname,
         lname: req.currentUser.lastname
     });
@@ -94,21 +95,25 @@ app.post("/register", async (req, res) => { //registering user
         const confirmpassword = req.body.confirmpassword;
         if (password === confirmpassword) {
             const userData = new User(req.body);
+            userData.password = await bcrypt.hash(userData.password, 10);
+            userData.confirmpassword=undefined;
             const token = await userData.generateToken(); //generating jwt token
             res.cookie("jwt", token);
             await userData.save();
-            res.status(200).render("index", {
-                loggedIn: true,
-                // loggedOut: !userData.isLoggedIn,
-                loggedInNow: true,
-                fname: req.body.firstname,
-                lname: req.body.lastname
-            });
+            // res.status(200).render("index", {
+            //     loggedIn: true,
+            //     // loggedOut: !userData.isLoggedIn,
+            //     loggedInNow: true,
+            //     fname: req.body.firstname,
+            //     lname: req.body.lastname
+            // });
+            res.redirect("/");
         }
         else
             res.send("Passwords are not matching");
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).send(error)
+        console.log(error);
     }
 })
 
@@ -125,14 +130,17 @@ app.post("/login", async (req, res) => { //sign in feature
         // console.log(token);
         res.cookie("jwt", token);
 
-        if (user.password === password) {
-            res.status(200).render("index", {
-                loggedIn: user.isLoggedIn,
-                // loggedOut: !user.isLoggedIn,
-                loggedInNow: true,
-                fname: user.firstname,
-                lname: user.lastname
-            });
+        const match = await bcrypt.compare(password,user.password);
+
+        if (match || user.password === password) {
+            // res.status(200).render("index", {
+            //     loggedIn: user.isLoggedIn,
+            //     // loggedOut: !user.isLoggedIn,
+            //     loggedInNow: true,
+            //     fname: user.firstname,
+            //     lname: user.lastname
+            // });
+            res.redirect("/");
         }
         else {
             res.status(400).render("index", {

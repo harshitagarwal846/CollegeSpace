@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
 
 const regSchema = mongoose.Schema({
     firstname: {
@@ -21,11 +22,12 @@ const regSchema = mongoose.Schema({
     },
     password: {
         type: String,
+        min: [6, 'Must be at least 6 characters'],
         required: true
     },
     confirmpassword: {
         type: String,
-        required: true
+        // required: true
     },
     tokens: [{
         token: {
@@ -41,11 +43,11 @@ const regSchema = mongoose.Schema({
             type: Boolean
         }
     }],
-    isLoggedIn:{
-        type:Boolean,
+    isLoggedIn: {
+        type: Boolean,
         default: true
     }
-});
+},{timestamps:true});
 
 regSchema.methods.generateToken = async function () {
     try {
@@ -54,7 +56,7 @@ regSchema.methods.generateToken = async function () {
         await this.save();
         return gentoken;
     } catch (err) {
-        res.send(err);
+        // res.send(err);
         console.log(err);
     }
 }
